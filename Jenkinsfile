@@ -34,7 +34,7 @@ pipeline {
         }
         stage('Building the docker be image') {
             steps {
-                sh 'cd ../api && docker build -t srikanthyadavalli/lms-b-e .'
+                sh 'cd api && docker build -t srikanthyadavalli/lms-b-e .'
             }
         }
         
