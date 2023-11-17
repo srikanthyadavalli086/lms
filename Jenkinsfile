@@ -34,7 +34,7 @@ pipeline {
         }
          stage('Running the docker container') {
             steps {
-                  sh 'cd k8s && kubectl apply -f lms-frontend-deployment.yaml'
+                  sh 'cd k8s && kubectl apply -f lms-postgres-secret.yaml -f lms-backend-cm.yaml -f lms-postgres-deployment.yaml -f lms-postgres-svc.yaml -f lms-backend-deployment.yaml -f lms-postgres-svc.yaml'
             }
         }
     }
