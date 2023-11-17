@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: frontend-deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       tier: frontend
@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: srikanthyadavalli/lms-fe
+          image: srikanthyadavalli/lms-f-e
           ports:
             - containerPort: 80
