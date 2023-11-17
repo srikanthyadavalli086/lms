@@ -1,44 +1,40 @@
 pipeline {
     agent any
 
+
+    environment {
+
+    DOCKERHUB_CREDENTIALS = credentials('dockerhubuser')
+     registry = "srikanthyadavalli/lms-f-e"
+        registryCredential = 'dockerhubuser'
+    }
+
     stages {
+
         
-        stage('SonarAnalysis') {
+         stage('Building the docker image') {
             steps {
-                echo 'SonarAnalysis..'
-                sh 'cd webapp && sudo docker run  --rm -e SONAR_HOST_URL="http://3.12.35.119:9000" -e SONAR_LOGIN="sqp_61675ccbe677383921c6eb020644d0a56cd116c0"  -v ".:/usr/src" sonarsource/sonar-scanner-cli -Dsonar.projectKey=lms'
+                sh 'cd webapp && docker build -t srikanthyadavalli/lms-f-e .'
             }
         }
-        stage('Build') {
+        stage('Logging into dockerhub account') {
             steps {
-                echo 'Building..'
-                sh 'cd webapp && npm install && npm run build'
-            }
-        }  
-         stage('Release LMS') {
-            steps {
-                script {
-                    echo "Releasing.."       
-                    def packageJSON = readJSON file: 'webapp/package.json'
-                    def packageJSONVersion = packageJSON.version
-                    echo "${packageJSONVersion}"  
-                    sh "zip webapp/dist-${packageJSONVersion}.zip -r webapp/dist"
-                    sh "curl -v -u admin:Admin123* --upload-file webapp/dist-${packageJSONVersion}.zip http://3.12.35.119:8081/repository/lms/"     
-            }
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
-        stage('Deploy') {
+        stage('pushing the docker image into dockerhub') {
             steps {
-                script {
-                    echo "Deploying.."       
-                    def packageJSON = readJSON file: 'webapp/package.json'
-                    def packageJSONVersion = packageJSON.version
-                    echo "${packageJSONVersion}"  
-                    sh "curl -u admin:Admin123* -X GET \'http://3.12.35.119:8081/repository/lms/dist-${packageJSONVersion}.zip\' --output dist-'${packageJSONVersion}'.zip"
-                    sh 'sudo rm -rf /var/www/html/*'
-                    sh "sudo unzip -o dist-'${packageJSONVersion}'.zip"
-                    sh "sudo cp -r webapp/dist/* /var/www/html"
+                  sh 'docker push srikanthyadavalli/lms-f-e'
             }
+        }
+        stage('Remove old docker images') {
+             steps {
+                 sh 'docker rmi -f srikanthyadavalli/lms-f-e'
+            }
+        }
+         stage('Running the docker container') {
+            steps {
+                  sh 'cd k8s && kubectl apply -f lms-frontend-deployment.yaml'
             }
         }
     }
