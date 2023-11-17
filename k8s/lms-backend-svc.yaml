@@ -7,4 +7,4 @@ spec:
   ports:
     - port: 3000
   selector:
-    app: lms-b-e
+    app: lms-be
