@@ -45,7 +45,7 @@ pipeline {
         }
         stage('Remove old docker be images') {
              steps {
-                 sh 'docker rmi -f srikanthyadavalli/lms-f-e'
+                 sh 'docker rmi -f srikanthyadavalli/lms-b-e'
             }
         }
          stage('Running the docker containers') {
