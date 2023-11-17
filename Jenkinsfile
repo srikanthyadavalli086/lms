@@ -12,7 +12,7 @@ pipeline {
     stages {
 
         
-         stage('Building the docker be image') {
+         stage('Building the docker fe image') {
             steps {
                 sh 'cd webapp && docker build -t srikanthyadavalli/lms-f-e .'
             }
