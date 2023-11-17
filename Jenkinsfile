@@ -32,6 +32,22 @@ pipeline {
                  sh 'docker rmi -f srikanthyadavalli/lms-f-e'
             }
         }
+        stage('Building the docker image') {
+            steps {
+                sh 'cd ../api && docker build -t srikanthyadavalli/lms-b-e .'
+            }
+        }
+        
+        stage('pushing the docker image into dockerhub') {
+            steps {
+                  sh 'docker push srikanthyadavalli/lms-b-e'
+            }
+        }
+        stage('Remove old docker images') {
+             steps {
+                 sh 'docker rmi -f srikanthyadavalli/lms-f-e'
+            }
+        }
          stage('Running the docker container') {
             steps {
                   sh 'cd k8s && kubectl apply -f lms-postgres-secret.yaml -f lms-backend-cm.yaml -f lms-postgres-deployment.yaml -f lms-postgres-svc.yaml -f lms-backend-deployment.yaml -f lms-postgres-svc.yaml'
